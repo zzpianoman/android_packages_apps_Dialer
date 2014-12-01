@@ -22,11 +22,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.preference.SwitchPreference;
 import android.provider.Settings;
 
 import com.android.dialer.R;
@@ -53,8 +53,8 @@ public class GeneralSettingsFragment extends PreferenceFragment
     private Context mContext;
 
     private Preference mRingtonePreference;
-    private CheckBoxPreference mVibrateWhenRinging;
-    private CheckBoxPreference mPlayDtmfTone;
+    private SwitchPreference mVibrateWhenRinging;
+    private SwitchPreference mPlayDtmfTone;
     private Preference mRespondViaSms;
 
     private Runnable mRingtoneLookupRunnable;
@@ -78,8 +78,8 @@ public class GeneralSettingsFragment extends PreferenceFragment
         addPreferencesFromResource(R.xml.general_settings);
 
         mRingtonePreference = findPreference(BUTTON_RINGTONE_KEY);
-        mVibrateWhenRinging = (CheckBoxPreference) findPreference(BUTTON_VIBRATE_ON_RING);
-        mPlayDtmfTone = (CheckBoxPreference) findPreference(BUTTON_PLAY_DTMF_TONE);
+        mVibrateWhenRinging = (SwitchPreference) findPreference(BUTTON_VIBRATE_ON_RING);
+        mPlayDtmfTone = (SwitchPreference) findPreference(BUTTON_PLAY_DTMF_TONE);
         mRespondViaSms = findPreference(BUTTON_RESPOND_VIA_SMS_KEY);
 
         PreferenceCategory soundCategory = (PreferenceCategory) findPreference(CATEGORY_SOUNDS_KEY);
@@ -126,6 +126,9 @@ public class GeneralSettingsFragment extends PreferenceFragment
             boolean doVibrate = (Boolean) objValue;
             Settings.System.putInt(mContext.getContentResolver(),
                     Settings.System.VIBRATE_WHEN_RINGING, doVibrate ? 1 : 0);
+        } else if (preference == mPlayDtmfTone) {
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.DTMF_TONE_WHEN_DIALING, (Boolean) objValue ? 1 : 0);
         }
         return true;
     }
@@ -135,10 +138,7 @@ public class GeneralSettingsFragment extends PreferenceFragment
      */
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        if (preference == mPlayDtmfTone) {
-            Settings.System.putInt(mContext.getContentResolver(),
-                    Settings.System.DTMF_TONE_WHEN_DIALING, mPlayDtmfTone.isChecked() ? 1 : 0);
-        } else if (preference == mRespondViaSms) {
+        if (preference == mRespondViaSms) {
             // Needs to return false for the intent to launch.
             return false;
         }
